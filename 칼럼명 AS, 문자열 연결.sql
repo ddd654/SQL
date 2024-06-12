@@ -1,0 +1,42 @@
+
+SELECT * FROM employees;
+-- 치고서 컬럼 확인
+
+SELECT * FROM DEPARTMENTS;
+SELECT * FROM JOBS;
+
+-- 특정 컬럼만 조회하기 
+-- 문자와 날짜는 왼쪽정렬, 숫자는 오른쪽 정렬
+SELECT FIRST_NAME, HIRE_DATE, SALARY FROM employees;
+
+-- 컬럼명자리에는 숫자 또는 날짜가 연산이 된다
+SELECT FIRST_NAME, SALARY + SALARY * 0.1 FROM EMPLOYEES;
+
+-- NULL
+SELECT * FROM EMPLOYEES;
+--EMPLOYEE_ID >> PK
+--DEPARTMENT_ID >> FK
+
+--칼럼명 바꾸기
+--엘리어스, 별칭 "AS 별칭"
+SELECT FIRST_NAME AS 별칭, SALARY 급여, SALARY + SALARY * 0.1 "최종 급여" FROM EMPLOYEES;
+
+-- ROWNUM 조회된 순서
+-- ROWID
+--문자열 연결 ||
+SELECT 'HELLO'||' WORLD' FROM EMPLOYEES;
+
+-- 홑 따옴표는 두개하면 표시됨
+SELECT FIRST_NAME || '''님의 급여는 ' || SALARY || ' 입니다' AS 급여 FROM EMPLOYEES;
+
+-- DISTINCT 중복 제거
+SELECT DISTINCT * FROM EMPLOYEES;
+
+SELECT DISTINCT DEPARTMENTS_ID FROM EMPLOYEES;
+
+--조회된 순서 ROWNUM, 레코드 저장된 위치 ROWID
+SELECT EMPLOYEE_ID, FIRST_NAME, ROWID, ROWNUM FROM EMPLOYEES;
+
+
+
+
