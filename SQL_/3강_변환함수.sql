@@ -1,0 +1,127 @@
+
+
+-- 중요한 변환 함수
+-- EX) CHAR >> NUMBER, DATE
+
+------------------------------
+--숫자를 문자로
+-- 자동형변환
+SELECT * FROM EMPLOYEES WHERE SALARY >= '20000'; --숫자를 자동 형변환으로 문자 > 숫자로 인식해서 찾아준다
+SELECT * FROM EMPLOYEES WHERE HIRE_DATE >= '06/01/01'; -- 문자 >> 날짜 형식으로 자동 형변환해준다
+
+-- 강제 형변환
+-- TO CHAR -> 날짜를 문자로 변환해줌
+SELECT TO_CHAR( SYSDATE , 'YYYY-MM-DD MM:HH:SS') AS 날짜 
+FROM DUAL;
+
+SELECT TO_CHAR( SYSDATE, 'YY-MM-DD AM HH12:MM:SS') AS TIME 
+FROM DUAL;
+
+SELECT TO_CHAR(SYSDATE, 'YY"년" MM"월" DD"일"') AS DATE1 FROM DUAL; -- " 쌍따옴표로 문자도 출력하기
+
+-- TO_CHAR -> 숫자를 문자로
+SELECT TO_CHAR(20000, '99999999') AS NUM FROM DUAL; --9는 그냥 자릿수 표시고 8개 써서 8자리가 문자가 되었다
+SELECT TO_CHAR(20000, '099999999') AS NUM FROM DUAL; -- 빈자리를 0으로 채움
+SELECT TO_CHAR(20000, '999') AS NUM FROM DUAL; --자리수가 부족하면 # 나옴
+
+SELECT TO_CHAR(20000.123, '999999.9999') AS NUM FROM DUAL; -- 정수6자리 실수4자리 표시하기
+SELECT TO_CHAR(20000, '$999999') AS NUM FROM DUAL; --6자리 넣고, 앞에 $ 표시
+
+SELECT TO_CHAR(20000, 'L9,999,999') AS RESULT FROM DUAL; -- 앞에 원화기호 표시하기, 자릿수 콤마로 표시하기
+
+-- 오늘 환율 1372.17로 SALARY 값을 원화로 표시하기
+SELECT TO_CHAR(SALARY * 1372.17, 'L999,999,999,999') AS 원화 FROM EMPLOYEES;
+
+-- TO_CHAR 문자를 날짜로
+SELECT '2024-06-13' FROM DUAL; -- 바로 날짜로 표시 못함
+SELECT TO_DATE('2024-02-13', 'YYYY-MM-DD') FROM DUAL; -- 날짜가 되었다
+SELECT SYSDATE - TO_DATE('2024-02-13', 'YYYY-MM-DD') FROM DUAL; --연산 가능
+
+SELECT TO_DATE('2024년 06월 13일', 'YYYY"년" MM"월" DD"일"') FROM DUAL; --날짜 형식 문자가 아니라면
+SELECT TO_DATE('24-06-13 11시 35분 33초', 'YYYY-MM-DD HH"시" MI"분" SS"초"') FROM DUAL; --분은 MI 이고, 문자로 변환됨
+
+-- 24년 06월 13일로 바꾸기
+SELECT '240613' FROM DUAL;
+SELECT  TO_DATE(TO_CHAR( 240613, '9999999999' ), 'YYYY"년" MM"월" DD"일"' ) FROM DUAL; 
+SELECT  TO_CHAR(TO_DATE( 240613, 'YYMMDD' ), 'YYYY"년" MM"월" DD"일"' ) FROM DUAL;
+
+SELECT TO_CHAR(TO_DATE(240613, 'YYMMDD'), 'YYYY"년" MM"월" DD"일"') FROM DUAL;
+
+---------------------------
+--문자를 숫자로 
+
+-- TO_NUMBER 문자를 숫자로
+SELECT '4000' - 1000 FROM DUAL; --자동형변환
+SELECT TO_NUMBER('4000') - 1000 FROM DUAL; --명시적 형변환
+
+SELECT '$4,400' - 1000 FROM DUAL;
+SELECT TO_NUMBER('$4,400', '$999,999') -1000 FROM DUAL; --명시적 변환 후 계산
+
+-------------------
+--NULL 처리 함수
+SELECT NVL(1000, 0), NVL(NULL, 0) FROM DUAL;
+SELECT NULL + 1000 FROM DUAL; --NULL이 들어간 연산은 NULL
+
+SELECT FIRST_NAME, SALARY, COMMISSION_PCT, SALARY + SALARY * COMMISSION_PCT FROM EMPLOYEES;
+SELECT FIRST_NAME, SALARY, COMMISSION_PCT, SALARY + SALARY * NVL(COMMISSION_PCT, 0) AS 최종급여 FROM EMPLOYEES;
+
+
+-- NVL (대상값, 널이아닌경우, 널인경우) >> 앞에따라서 값 출력
+SELECT NVL2(NULL, 'NULL이 아닙니다', 'NULL입니다') FROM DUAL;
+SELECT NVL2(300, 'NULL이 아닙니다', 'NULL입니다') FROM DUAL;
+
+SELECT FIRST_NAME, SALARY, COMMISSION_PCT, NVL2(COMMISSION_PCT, SALARY + SALARY * COMMISSION_PCT, SALARY) AS 최종급여 FROM EMPLOYEES;
+--위와 동일한 결과
+
+-- COALESC(값, 값, 값, ....) > NULL이 아닌 첫번째 값 출력
+SELECT COALESCE(1, 2, 3) FROM DUAL; -- 1출력
+SELECT COALESCE(NULL, 2, 3, 4) FROM DUAL; --2
+SELECT COALESCE(NULL, NULL, 3, NULL) FROM DUAL;
+SELECT COALESCE(COMMISSION_PCT, 0) FROM EMPLOYEES; --NVL과 같음
+
+-- DECODE(대상값, 비교값, 결과값, 비교값, 결과값, ...) >
+SELECT JOB_ID, SALARY, DECODE( JOB_ID, 'IT_PROG', 'SALARY') FROM EMPLOYEES;
+SELECT DECODE('A', 'A', 'A입니다') FROM DUAL; -- A가 A이면 A이다
+
+SELECT DECODE('V', 'A', 'A입니다', 'A가 아닙니다') FROM DUAL;
+
+SELECT DECODE('B', 'A', 'A입니다' 
+, 'B', 'B입니다'
+, 'C', 'C입니다'
+, '전부아닙니다'
+)
+FROM DUAL;
+
+SELECT DECODE(JOB_ID, 'IT_PROG', SALARY * 1.1
+,'AD_VI', SALARY * 1.2
+,'FI_MGR', SALARY * 1.3
+, SALARY
+) AS 급여 
+FROM EMPLOYEES;
+
+--CASE WHEN WHEN THEN END, 스위치문
+SELECT JOB_ID, SALARY,
+CASE JOB_ID WHEN 'IT_PROG' THEN SALARY * 1.2 END
+FROM EMPLOYEES;
+
+SELECT JOB_ID,
+       CASE JOB_ID WHEN 'IT_PROG' THEN SALARY * 1.1
+                   WHEN 'AD VF'   THEN SALARY * 1.2
+                   WHEN 'FI_MGR'  THEN SALARY * 1.3
+                   ELSE SALARY
+       END AS 급여
+FROM EMPLOYEES;
+
+-- 비교에 대한 조건을 WHEN절에 쓸 수 있음, 위와 같은 결과값
+SELECT JOB_ID,
+        CASE WHEN JOB_ID = 'IR_PROG' THEN SALARY * 1.2
+            WHEN JOB_ID = 'AD VF' THEN SALARY * 1.3
+            WHEN JOB_ID = 'FI_MGR' THEN SALARY * 1.4
+            ELSE SALARY
+            END AS 급여
+FROM EMPLOYEES;
+
+
+
+
+
