@@ -1,0 +1,20 @@
+
+SELECT * FROM employees E INNER JOIN departments D ON e.department_id = D.department_id;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
