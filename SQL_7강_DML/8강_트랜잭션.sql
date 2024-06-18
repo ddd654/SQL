@@ -1,0 +1,65 @@
+
+--트랜잭션
+--DML에서만 트랜잭션 수행 가능ㅇㅇㅇㅇ
+
+--오토 커밋 확인하기
+SHOW AUTOCOMMIT;
+SET AUTOCOMMIT ON;
+SET AUTOCOMMIT OFF;
+
+SELECT * FROM DEPTS;
+DELETE FROM DEPTS WHERE DEPARTMENT_ID = 10;
+
+SAVEPOINT DEPTS10; --트랜잭션 지점, 세이브포인트
+
+DELETE FROM DEPTS WHERE DEPARTMENT_ID = 20;
+
+SAVEPOINT DEPTS20;
+
+DELETE FROM DEPTS WHERE DEPARTMENT_ID = 30;
+
+--SAVE 지점 돌아가기
+SAVEPOINT TO DEPTS10;
+SAVEPOINT TO DEPTS20;
+
+ROLLBACK;
+
+SELECT * FROM DEPTS;
+
+INSERT INTO DEPTS VALUES (280, 'AA', NULL, 1800);
+COMMIT;
+
+SELECT * FROM DEPTS;
+
+---------
+--시험에서는 트랜잭션 4원칙 나옴
+
+------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
