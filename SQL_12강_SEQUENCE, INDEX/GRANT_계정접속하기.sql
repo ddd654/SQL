@@ -1,0 +1,30 @@
+
+CREATE TABLE TEST(
+    EX_NUM VARCHAR2(30) PRIMARY KEY
+);
+
+INSERT INTO TEST VALUES('123');
+
+SELECT * FROM TEST;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
